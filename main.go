@@ -9,7 +9,12 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
+)
+
+var (
+	res = &Result{}
 )
 
 //Result - container for analysis results
@@ -41,11 +46,31 @@ type Result struct {
 //Parser - Code parser struct
 type Parser struct{}
 
-//ParseDir - Parse all files within directory
-func (p *Parser) ParseDir(targetDir string) *Result {
+func (p *Parser) ParseTree(path string) error {
+	pathLen := len(path)
 
-	res := &Result{}
+	// Parse recursively the given path if the recursive notation is found
+	if pathLen >= 5 && path[pathLen-3:] == "..." {
+		filepath.Walk(path[:pathLen-3], func(fp string, f os.FileInfo, err error) error {
+			if err != nil {
+				log.Println(err)
+				return nil
+			}
 
+			if f.IsDir() {
+				p.parseDir(fp)
+			}
+			return nil
+		})
+	} else {
+		p.parseDir(path)
+	}
+
+	return nil
+}
+
+//parseDir - Parse all files within directory
+func (p *Parser) parseDir(targetDir string) error {
 	//create the file set
 	fset := token.NewFileSet()
 	d, err := parser.ParseDir(fset, targetDir, nil, parser.ParseComments)
@@ -55,7 +80,7 @@ func (p *Parser) ParseDir(targetDir string) *Result {
 
 	//count up lines
 	fset.Iterate(func(file *token.File) bool {
-		loc, cloc, assertions := p.CountLOC(file.Name())
+		loc, cloc, assertions := p.countLOC(file.Name())
 		res.LOC += loc
 		res.CLOC += cloc
 		res.NCLOC += (loc - cloc)
@@ -82,12 +107,11 @@ func (p *Parser) ParseDir(targetDir string) *Result {
 		})
 	}
 
-	return res
+	return nil
 }
 
 //CountLOC - count lines of code, pull LOC, Comments, assertions
-func (p *Parser) CountLOC(filePath string) (int, int, int) {
-
+func (p *Parser) countLOC(filePath string) (int, int, int) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -173,5 +197,6 @@ func main() {
 	}
 
 	parser := Parser{}
-	report.Print(parser.ParseDir(*targetDir))
+	parser.ParseTree(*targetDir)
+	report.Print(res)
 }
