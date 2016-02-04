@@ -7,7 +7,7 @@ import (
 func TestCLOC(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.CLOC != 8 {
 		t.Error("expected 8 comment lines")
@@ -17,7 +17,7 @@ func TestCLOC(t *testing.T) {
 func TestStructCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Struct != 2 {
 		t.Error("expected 2 structs")
@@ -27,7 +27,7 @@ func TestStructCount(t *testing.T) {
 func TestInterfaceCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Interface != 1 {
 		t.Error("expected 1 interface")
@@ -37,7 +37,7 @@ func TestInterfaceCount(t *testing.T) {
 func TestMethodCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Method != 2 {
 		t.Error("expected 2 methods")
@@ -51,7 +51,7 @@ func TestMethodCount(t *testing.T) {
 func TestMethodLineCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.MethodLOC != 15 {
 		t.Error("expected 15 method lines got", res.MethodLOC)
@@ -61,7 +61,7 @@ func TestMethodLineCount(t *testing.T) {
 func TestFunctionCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Function != 5 {
 		t.Error("expected 5 functions got", res.Function)
@@ -75,7 +75,7 @@ func TestFunctionCount(t *testing.T) {
 func TestFunctionLineCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.FunctionLOC != 10 {
 		t.Error("expected 10 function lines got", res.FunctionLOC)
@@ -85,7 +85,7 @@ func TestFunctionLineCount(t *testing.T) {
 func TestImportCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Import != 5 {
 		t.Error("expected 5 imports got", res.Import)
@@ -95,7 +95,7 @@ func TestImportCount(t *testing.T) {
 func TestTestCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Test != 3 {
 		t.Error("expected 3 tests got", res.Test)
@@ -105,7 +105,7 @@ func TestTestCount(t *testing.T) {
 func TestAssertCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.Assertion != 2 {
 		t.Error("expected 2 tests got", res.Test)
@@ -115,7 +115,7 @@ func TestAssertCount(t *testing.T) {
 func TestIfStatementCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.IfStatement != 2 {
 		t.Error("expected 2 if statements got", res.IfStatement)
@@ -125,7 +125,7 @@ func TestIfStatementCount(t *testing.T) {
 func TestSwitchStatementCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.SwitchStatement != 1 {
 		t.Error("expected 1 switch statement got", res.SwitchStatement)
@@ -135,7 +135,7 @@ func TestSwitchStatementCount(t *testing.T) {
 func TestGoStatementCount(t *testing.T) {
 	res = &Result{}
 	parser := Parser{}
-	parser.parseDir("./fixture")
+	parser.parseDir("./fixture", "")
 
 	if res.GoStatement != 2 {
 		t.Error("expected 2 switch statement got", res.GoStatement)

@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -46,7 +47,7 @@ type Result struct {
 //Parser - Code parser struct
 type Parser struct{}
 
-func (p *Parser) ParseTree(path string) error {
+func (p *Parser) ParseTree(path, ignore string) error {
 	pathLen := len(path)
 
 	// Parse recursively the given path if the recursive notation is found
@@ -58,22 +59,37 @@ func (p *Parser) ParseTree(path string) error {
 			}
 
 			if f.IsDir() {
-				p.parseDir(fp)
+				p.parseDir(fp, ignore)
 			}
 			return nil
 		})
 	} else {
-		p.parseDir(path)
+		p.parseDir(path, ignore)
 	}
 
 	return nil
 }
 
 //parseDir - Parse all files within directory
-func (p *Parser) parseDir(targetDir string) error {
+func (p *Parser) parseDir(targetDir, ignore string) error {
 	//create the file set
 	fset := token.NewFileSet()
-	d, err := parser.ParseDir(fset, targetDir, nil, parser.ParseComments)
+	d, err := parser.ParseDir(fset, targetDir, func(info os.FileInfo) bool {
+		valid, name := true, info.Name()
+
+		if len(ignore) != 0 {
+			match, err := regexp.MatchString(ignore, targetDir+name)
+			if err != nil {
+				log.Fatal(err)
+				return true
+			}
+			if match {
+				valid = false
+			}
+		}
+
+		return valid
+	}, parser.ParseComments)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,6 +202,7 @@ func main() {
 
 	targetDir := flag.String("d", pwd, "target directory")
 	outputFmt := flag.String("o", "text", "output format")
+	ignore := flag.String("ignore", "", "ignore files matching the given regular expression")
 	flag.Parse()
 
 	var report ReportInterface
@@ -197,6 +214,6 @@ func main() {
 	}
 
 	parser := Parser{}
-	parser.ParseTree(*targetDir)
+	parser.ParseTree(*targetDir, *ignore)
 	report.Print(res)
 }
