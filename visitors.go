@@ -50,7 +50,11 @@ func (v *FuncVisitor) Visit(node ast.Node) {
 				v.res.ExportedFunction++
 				if strings.HasPrefix(x.Name.String(), "Test") {
 					if len(x.Type.Params.List) != 0 {
-						xt := x.Type.Params.List[0].Type.(*ast.StarExpr)
+						xt, ok := x.Type.Params.List[0].Type.(*ast.StarExpr)
+						if !ok {
+							return
+						}
+
 						xtx := xt.X.(*ast.SelectorExpr)
 						for _, validArgType := range []string{"testing.T", "testing.M", "testing.B"} {
 							if fmt.Sprintf("%s.%s", xtx.X, xtx.Sel) == validArgType {
