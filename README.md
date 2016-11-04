@@ -1,6 +1,6 @@
 #GOLOCC
 
-[![Build Status](https://travis-ci.org/warmans/golocc.svg)](https://travis-ci.org/warmans/golocc) [![code-coverage](http://gocover.io/_badge/github.com/warmans/golocc)](http://gocover.io/github.com/warmans/golocc)
+[![Build Status](https://travis-ci.org/jgautheron/golocc.svg)](https://travis-ci.org/jgautheron/golocc) [![code-coverage](http://gocover.io/_badge/github.com/jgautheron/golocc)](http://gocover.io/github.com/jgautheron/golocc)
 
 Utility for counting lines of code (LOC, CLOC, NCLOC) and structures/statements in a go package.
 
@@ -24,6 +24,7 @@ or
 
 ```
 --------------------------------------------------------------------------------
+Number of Files: 3
 Lines of Code: 66 (8 CLOC, 58 NCLOC)
 Imports:       5
 Structs:       2

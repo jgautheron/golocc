@@ -1,4 +1,4 @@
-package main
+package golocc
 
 import (
 	"fmt"

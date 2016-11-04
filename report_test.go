@@ -1,4 +1,4 @@
-package main
+package golocc
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 func TestTextOutput(t *testing.T) {
 
 	buff := &bytes.Buffer{}
-	report := &TextReport{writer: buff}
+	report := &TextReport{Writer: buff}
 	res := &Result{
 		LOC:              10,
 		CLOC:             11,

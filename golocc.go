@@ -1,8 +1,7 @@
-package main
+package golocc
 
 import (
 	"bufio"
-	"flag"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -14,11 +13,7 @@ import (
 	"strings"
 )
 
-var (
-	res = &Result{}
-)
-
-//Result - container for analysis results
+// Result - container for analysis results
 type Result struct {
 	LOC   int
 	CLOC  int
@@ -42,32 +37,46 @@ type Result struct {
 
 	Test      int
 	Assertion int
+
+	Files int
 }
 
-//Parser - Code parser struct
-type Parser struct{}
+// Parser - Code parser struct
+type Parser struct {
+	result *Result
+	path   string
+	ignore string
+}
 
-func (p *Parser) ParseTree(path, ignore string) error {
-	pathLen := len(path)
+func New(path, ignore string) *Parser {
+	return &Parser{
+		result: &Result{},
+		path:   path,
+		ignore: ignore,
+	}
+}
+
+func (p *Parser) ParseTree() (*Result, error) {
+	pathLen := len(p.path)
 
 	// Parse recursively the given path if the recursive notation is found
-	if pathLen >= 5 && path[pathLen-3:] == "..." {
-		filepath.Walk(path[:pathLen-3], func(fp string, f os.FileInfo, err error) error {
+	if pathLen >= 5 && p.path[pathLen-3:] == "..." {
+		filepath.Walk(p.path[:pathLen-3], func(fp string, f os.FileInfo, err error) error {
 			if err != nil {
 				log.Println(err)
 				return nil
 			}
 
 			if f.IsDir() {
-				p.parseDir(fp, ignore)
+				p.parseDir(fp, p.ignore)
 			}
 			return nil
 		})
 	} else {
-		p.parseDir(path, ignore)
+		p.parseDir(p.path, p.ignore)
 	}
 
-	return nil
+	return p.result, nil
 }
 
 //parseDir - Parse all files within directory
@@ -97,10 +106,11 @@ func (p *Parser) parseDir(targetDir, ignore string) error {
 	//count up lines
 	fset.Iterate(func(file *token.File) bool {
 		loc, cloc, assertions := p.countLOC(file.Name())
-		res.LOC += loc
-		res.CLOC += cloc
-		res.NCLOC += (loc - cloc)
-		res.Assertion += assertions
+		p.result.LOC += loc
+		p.result.CLOC += cloc
+		p.result.NCLOC += (loc - cloc)
+		p.result.Assertion += assertions
+		p.result.Files++
 		return true
 	})
 
@@ -108,10 +118,10 @@ func (p *Parser) parseDir(targetDir, ignore string) error {
 	var visitors []AstVisitor
 	visitors = append(
 		visitors,
-		&TypeVisitor{res: res},
-		&FuncVisitor{res: res, fset: fset},
-		&ImportVisitor{res: res},
-		&FlowControlVisitor{res: res})
+		&TypeVisitor{res: p.result},
+		&FuncVisitor{res: p.result, fset: fset},
+		&ImportVisitor{res: p.result},
+		&FlowControlVisitor{res: p.result})
 
 	//count entities
 	for _, pkg := range d {
@@ -192,28 +202,6 @@ func (p *Parser) countLOC(filePath string) (int, int, int) {
 	}
 }
 
-func main() {
-
-	//default to current working dir
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal("Failed to get current working dir: ", err.Error())
-	}
-
-	targetDir := flag.String("d", pwd, "target directory")
-	outputFmt := flag.String("o", "text", "output format")
-	ignore := flag.String("ignore", "", "ignore files matching the given regular expression")
-	flag.Parse()
-
-	var report ReportInterface
-	switch *outputFmt {
-	case "text":
-		report = &TextReport{writer: os.Stdout}
-	case "json":
-		report = &JSONReport{writer: os.Stdout}
-	}
-
-	parser := Parser{}
-	parser.ParseTree(*targetDir, *ignore)
-	report.Print(res)
+func (p *Parser) GetResult() *Result {
+	return p.result
 }
