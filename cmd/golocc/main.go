@@ -28,7 +28,15 @@ func main() {
 		report = &golocc.JSONReport{Writer: os.Stdout}
 	}
 
-	parser := golocc.New(*targetDir, *ignore)
+	path := *targetDir
+	pathLen := len(path)
+	recursive := false
+	if pathLen >= 5 && path[pathLen-3:] == "..." {
+		recursive = true
+		path = path[:pathLen-3]
+	}
+
+	parser := golocc.New(path, *ignore, recursive)
 	res, err := parser.ParseTree()
 	if err != nil {
 		log.Fatal(err)

@@ -43,25 +43,20 @@ type Result struct {
 
 // Parser - Code parser struct
 type Parser struct {
-	result *Result
-	path   string
-	ignore string
+	result    *Result
+	path      string
+	ignore    string
+	recursive bool
 }
 
-func New(path, ignore string) *Parser {
-	return &Parser{
-		result: &Result{},
-		path:   path,
-		ignore: ignore,
-	}
+func New(path, ignore string, recursive bool) *Parser {
+	return &Parser{&Result{}, path, ignore, recursive}
 }
 
 func (p *Parser) ParseTree() (*Result, error) {
-	pathLen := len(p.path)
-
-	// Parse recursively the given path if the recursive notation is found
-	if pathLen >= 5 && p.path[pathLen-3:] == "..." {
-		filepath.Walk(p.path[:pathLen-3], func(fp string, f os.FileInfo, err error) error {
+	// Parse recursively the given path if enabled
+	if p.recursive {
+		filepath.Walk(p.path, func(fp string, f os.FileInfo, err error) error {
 			if err != nil {
 				log.Println(err)
 				return nil
