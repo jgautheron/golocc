@@ -15,30 +15,30 @@ import (
 
 // Result - container for analysis results
 type Result struct {
-	LOC   int
-	CLOC  int
-	NCLOC int
+	LOC   int `json:"loc"`
+	CLOC  int `json:"cloc"`
+	NCLOC int `json:"ncloc"`
 
-	Struct    int
-	Interface int
+	Struct    int `json:"struct"`
+	Interface int `json:"interface"`
 
-	Method           int
-	ExportedMethod   int
-	MethodLOC        int
-	Function         int
-	ExportedFunction int
-	FunctionLOC      int
+	Method           int `json:"method"`
+	ExportedMethod   int `json:"exported_method"`
+	MethodLOC        int `json:"method_loc"`
+	Function         int `json:"function"`
+	ExportedFunction int `json:"exported_function"`
+	FunctionLOC      int `json:"function_loc"`
 
-	Import int
+	Import int `json:"import"`
 
-	IfStatement     int
-	SwitchStatement int
-	GoStatement     int
+	IfStatement     int `json:"if_statement"`
+	SwitchStatement int `json:"switch_statement"`
+	GoStatement     int `json:"go_statement"`
 
-	Test      int
-	Assertion int
+	Test      int `json:"test"`
+	Assertion int `json:"assertion"`
 
-	Files int
+	Files int `json:"files"`
 }
 
 // Parser - Code parser struct
